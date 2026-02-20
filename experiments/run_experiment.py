@@ -686,7 +686,7 @@ def run_training(
         max_image_size=config.image_size,
     )
 
-    trainer = LoRATrainer(training_config=training_config)
+    trainer = LoRATrainer(training_config=training_config, output_dir=config.output_dir)
 
     # --- Augmentation: set image transform on trainer for lazy loading ---
     augmentor = build_augmentor(config)

@@ -47,7 +47,7 @@ class TrainingConfig:
     lora_target_modules: List[str] = field(default_factory=lambda: ["q_proj", "k_proj", "v_proj", "o_proj"])
     
     # Training settings
-    output_dir: str = "models/finetuned"
+    output_dir: str = "models"
     num_train_epochs: int = 3
     per_device_train_batch_size: int = 1
     per_device_eval_batch_size: int = 1
@@ -122,7 +122,7 @@ class LoRATrainer:
     def __init__(
         self,
         training_config: Optional[TrainingConfig] = None,
-        output_dir: str = "models/finetuned"
+        output_dir: str = "models"
     ):
         """
         Initialize the LoRA trainer.
@@ -1323,7 +1323,7 @@ class BenchmarkEvaluator:
 
 def run_lora_finetuning(
     dataset_path: str,
-    output_dir: str = "models/finetuned",
+    output_dir: str = "models",
     model_name: str = "google/medgemma-4b-it",
     num_epochs: int = 3,
     learning_rate: float = 2e-5,

@@ -55,13 +55,12 @@ app.py                              # HuggingFace Spaces entry point (Gradio dem
 upload_adapter.py                   # Upload trained adapter to HF Hub
 
 experiments/
-├── configs/
-│   └── exp1b_data_scale_5k.yaml   # Experiment config (5K samples/dataset)
 ├── run_experiment.py               # Experiment launcher
 └── download_datasets.py            # Automated dataset download
 
 configs/
-└── training_config.yaml            # Default training hyperparameters
+├── training_config.yaml            # Default training hyperparameters
+└── exp1b_data_scale_5k.yaml       # Experiment config (5K samples/dataset)
 ```
 
 ---
@@ -125,10 +124,10 @@ data/datasets/bach/{Normal,Benign,InSitu,Invasive}/*.png
 
 ```bash
 python experiments/run_experiment.py \
-    --config experiments/configs/exp1b_data_scale_5k.yaml
+    --config configs/exp1b_data_scale_5k.yaml
 ```
 
-Trains for 1 epoch with early stopping. Adapter saved to `models/finetuned/exp1b_data_scale_5k/final_model/`.
+Trains for 1 epoch with early stopping. Adapter saved to `models/exp1b_data_scale_5k/final_model/`.
 
 ### Step 3 — Upload adapter for the demo
 

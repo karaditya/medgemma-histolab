@@ -1,53 +1,9 @@
 """
-Fine-tuning Orchestrator - HistoLocal
+Fine-tuning Orchestrator - HistoLab
 
 Comprehensive fine-tuning pipeline that supports:
-- Multi-dataset selection (basket of datasets)Clean. 22 files, nothing sensitive. Here's the full picture of what was created and your deployment checklist:                                                                
-                                             
-  ---                                                                                                                                                                           
-  What Was Created                                                                                                                                                              
-                                                                                                                                                                                
-  /home/aditya/Desktop/medgemma-histolab-public/ — ready to push to a new public GitHub repo.                                                                                   
-                                                                                                                                                                                
-  22 files tracked:
-  ├── app.py                      ← HF Spaces entry point (Gradio demo)
-  ├── upload_adapter.py           ← Uploads your 35MB adapter to HF Hub                                                                                                         
-  ├── finetune_runner.py          ← Main training orchestrator                                                                                                                  
-  ├── setup.py / requirements.txt                                                                                                                                               
-  ├── README.md                   ← Public-facing with results table
-  ├── .gitignore                  ← Excludes tokens/data/weights/logs
-  ├── histolab/                   ← Full package (training + inference + UI)
-  ├── experiments/
-  │   ├── configs/exp1b_data_scale_5k.yaml  ← Only the 5K experiment
-  │   ├── run_experiment.py
-  │   └── download_datasets.py
-  └── configs/training_config.yaml
-
-  NOT included: hf_token.txt, kaggle.txt, WANDB_KEY.txt, data/, models/, logs/, old experiments, finetune_runner_sn.py, writeup/
-
-  ---
-  Deployment Checklist
-
-  Step 1 — Upload adapter to HF Hub (once):
-  cd /home/aditya/Desktop/medgemma-histolab-public
-  python upload_adapter.py
-  # Prints: ADAPTER_REPO_ID = yourname/medgemma-histolab-5k
-
-  Step 2 — Push to new GitHub repo:
-  cd /home/aditya/Desktop/medgemma-histolab-public
-  git branch -m main
-  git remote add origin https://github.com/YOUR_USERNAME/medgemma-histolab.git
-  git commit -m "Initial submission: MedGemma Impact Challenge"
-  git push -u origin main
-
-  Step 3 — Create HF Space:
-  1. huggingface.co/new-space → type: Gradio → link your GitHub repo
-  2. Add Space Secrets:
-    - HF_TOKEN = your HF token (needs MedGemma gated access)
-    - ADAPTER_REPO_ID = output from Step 1
-
-  The Space auto-installs requirements.txt and runs app.py. That's your live demo link for the judges.
-- Automatic train/val/test splitting
+- Multi-dataset selection (CRC, PCam, BACH)
+- Automatic train/val/test splitting with stratification
 - Data preprocessing for MedGemma
 - Zero-shot vs Fine-tuned comparison
 - Automatic evaluation and metrics calculation
@@ -153,7 +109,7 @@ class FineTuneConfig:
     image_size: int = 384
     
     # Output settings
-    output_dir: str = "models/finetuned"
+    output_dir: str = "models"
     experiment_name: str = "medgemma_finetune"
     
     # Evaluation settings
@@ -838,8 +794,8 @@ class FineTuneRunner:
             lora_dropout=self.config.lora_dropout
         )
         
-        trainer = LoRATrainer(training_config=training_config)
-        
+        trainer = LoRATrainer(training_config=training_config, output_dir=self.config.output_dir)
+
         # Prepare model
         trainer.prepare_model_and_tokenizer()
         
@@ -1384,7 +1340,7 @@ def run_finetune(
     epochs: int = 3,
     learning_rate: float = 2e-5,
     compare_baseline: bool = True,
-    output_dir: str = "models/finetuned",
+    output_dir: str = "models",
     use_wandb: bool = True,
     wandb_project: str = "histolab-medgemma-finetune",
     wandb_entity: Optional[str] = None,
