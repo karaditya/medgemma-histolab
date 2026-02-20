@@ -1,0 +1,56 @@
+# HistoLab Training Configuration
+# =================================
+
+# Dataset Settings
+datasets:
+  - crc
+  - pcam
+  - bach
+
+samples_per_dataset: 0  # 0 = use ALL available samples (CRC ~100K, PCam ~327K, BACH ~400)
+train_ratio: 0.7
+val_ratio: 0.15
+test_ratio: 0.15
+
+# Model Settings
+base_model: "google/medgemma-4b-it"
+quantization: 4  # 4-bit for training
+use_qlora: true
+
+# LoRA Settings
+# Reduced from r=64/alpha=128 to prevent memorization (model hit loss=0 by step 300)
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+
+# Training Settings
+# Reduced from 3 — model converges within epoch 1, epochs 2-3 were wasted (loss=0)
+epochs: 1
+batch_size: 1
+learning_rate: 2e-5
+max_seq_length: 2048
+image_size: 384
+
+# Output Settings
+output_dir: "models"
+experiment_name: "medgemma_finetune_multi"
+
+# Evaluation Settings
+compare_baseline: true
+save_predictions: true
+
+# Experiment Tracking
+use_wandb: true
+wandb_project: "histolab-medgemma-finetune"
+wandb_entity: null
+wandb_run_name: null
+
+# Advanced Settings
+gradient_accumulation_steps: 4
+warmup_ratio: 0.03
+weight_decay: 0.01
+max_grad_norm: 1.0
+gradient_checkpointing: true
+save_strategy: "epoch"
+eval_strategy: "epoch"
+logging_steps: 10

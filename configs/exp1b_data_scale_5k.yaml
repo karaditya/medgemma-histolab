@@ -1,0 +1,57 @@
+# Experiment 1b: Data Scale Test — 5K samples/dataset
+# =====================================================
+# Tests H1: Training data scale is the dominant lever.
+# Uses 5000 samples/dataset. Compare with 1K (exp1a) to see if more data helps.
+# Note: BACH only has ~400 total, so it will use all available.
+
+experiment_id: "exp1b_data_scale_5k"
+experiment_name: "Data Scale 5K"
+description: "Test data scale effect: 5000 samples per dataset (no SN, same config as baseline)"
+
+# Dataset
+datasets:
+  - crc
+  - pcam
+  - bach
+samples_per_dataset: 5000
+data_dir: "data/datasets"
+
+# Model
+base_model: "google/medgemma-4b-it"
+quantization: 4
+use_qlora: true
+
+# LoRA (identical to baseline)
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+lora_target_scope: "llm_only"
+
+# Training (identical to baseline)
+epochs: 1
+batch_size: 1
+learning_rate: 2e-5
+gradient_accumulation_steps: 4
+warmup_ratio: 0.03
+weight_decay: 0.01
+gradient_checkpointing: true
+early_stopping_patience: 50
+
+# Prompt (identical to baseline)
+prompt_style: "generic"
+
+# Augmentation (identical to baseline — OFF)
+augment_train: false
+stain_jitter: false
+
+# Class weighting (identical to baseline — NONE)
+class_weighting: "none"
+
+# Output
+output_dir: "models"
+compare_baseline: true
+save_predictions: true
+
+# WandB
+use_wandb: true
+wandb_project: "histolab-experiments"

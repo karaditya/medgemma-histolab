@@ -1,0 +1,49 @@
+# ── Sensitive credentials ────────────────────────────────────────────
+hf_token.txt
+kaggle.txt
+WANDB_KEY.txt
+*.key
+.env
+
+# ── Large data / model weights (use HF Hub instead) ─────────────────
+data/
+models/
+adapter/
+
+# ── Logs ─────────────────────────────────────────────────────────────
+logs/
+*.log
+
+# ── Python ───────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# ── Jupyter ──────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── IDE / OS ─────────────────────────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# ── Temporary / generated files ──────────────────────────────────────
+*.tmp
+*.bak
+*.orig
+writeup/
+visualisations/
+histo_*.png
+*.png
+*.pdf
