@@ -33,7 +33,7 @@ setup(
     python_requires=">=3.10",
     install_requires=[
         # Core ML/AI
-        "transformers>=4.35.0",
+        "transformers>=4.49.0",
         "torch>=2.0.0",
         "torchvision>=0.15.0",
         "accelerate>=0.25.0",
