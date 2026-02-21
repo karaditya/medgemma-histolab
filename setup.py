@@ -52,7 +52,7 @@ setup(
         "openslide-python>=1.3.0",
         
         # UI
-        "gradio>=4.0.0",
+        "gradio>=5.0.0",
         
         # Report Generation
         "reportlab>=4.0.0",

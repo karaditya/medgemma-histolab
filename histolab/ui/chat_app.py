@@ -719,7 +719,8 @@ REASONING: [brief explanation]"""
         """
         
         with gr.Blocks(
-            title="HistoLab Chat - MedGemma Assistant"
+            title="HistoLab Chat - MedGemma Assistant",
+            css=self._css,
         ) as app:
             self._build(app)
         
@@ -1124,7 +1125,7 @@ def launch_chat_app(
         server_port: Port to run the server on
     """
     app = create_chat_app(wrapper)
-    app.launch(share=share, server_port=server_port, css=app._css)
+    app.launch(share=share, server_port=server_port)
 
 
 if __name__ == "__main__":

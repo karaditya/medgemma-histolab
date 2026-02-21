@@ -109,6 +109,5 @@ demo = app_instance.build_interface()
 
 if __name__ == "__main__":
     demo.launch(
-        css=getattr(app_instance, "_css", None),
         show_api=False,
     )
