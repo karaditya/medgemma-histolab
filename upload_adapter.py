@@ -196,6 +196,7 @@ def upload_adapter(adapter_path: str = ADAPTER_PATH, repo_name: str = REPO_NAME,
             "adapter_config.json",
             "adapter_model.safetensors",
             "base_model_config.json",
+            "chat_template.jinja",       # critical: defines the prompt format used during training
             "tokenizer.json",
             "tokenizer_config.json",
             "preprocessor_config.json",

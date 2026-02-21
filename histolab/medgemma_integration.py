@@ -231,11 +231,17 @@ class MedGemmaWrapper:
         if not merged_path.exists():
             self._create_merged_model(adapter_path, base_model_name, hf_token, merged_path)
 
-        # Load merged model in bfloat16 with GPU+CPU split.
+        # Load merged model with GPU+CPU split.
+        # Use bf16 if GPU supports it natively (Ampere+), otherwise fp16 (T4, etc.)
         # 4-bit quantization destroys the LoRA signal → empty outputs.
-        # We cap GPU usage to leave ~1.5 GiB free for activation tensors.
         _check_ram_or_warn("fine-tuned")
-        logger.info(f"Loading merged model in bfloat16 from: {merged_path}")
+
+        bf16_native = torch.cuda.is_available() and torch.cuda.is_bf16_supported()
+        model_dtype = torch.bfloat16 if bf16_native else torch.float16
+        logger.info(
+            f"Loading merged model in {model_dtype} from: {merged_path} "
+            f"(bf16 native: {bf16_native})"
+        )
 
         self.processor = AutoProcessor.from_pretrained(
             str(merged_path),
@@ -247,7 +253,7 @@ class MedGemmaWrapper:
         load_kwargs = dict(
             trust_remote_code=True,
             device_map="auto",
-            torch_dtype=torch.bfloat16,
+            torch_dtype=model_dtype,
             token=hf_token,
         )
 
@@ -271,7 +277,7 @@ class MedGemmaWrapper:
         self.model.eval()
 
         self._loaded = True
-        logger.info("Fine-tuned model loaded successfully (bf16, GPU+CPU split)")
+        logger.info(f"Fine-tuned model loaded successfully ({model_dtype}, GPU+CPU split)")
         return True
 
     def _create_merged_model(self, adapter_path: Path, base_model_name: str,
@@ -305,11 +311,30 @@ class MedGemmaWrapper:
         logger.info(f"Saving merged model to {merged_path}...")
         base_model.save_pretrained(str(merged_path))
 
-        processor = AutoProcessor.from_pretrained(
-            str(adapter_path),
-            trust_remote_code=True,
-            token=hf_token,
-        )
+        # Load processor: prefer adapter dir (has chat_template.jinja from training),
+        # fall back to base model on HF Hub if adapter is incomplete.
+        try:
+            processor = AutoProcessor.from_pretrained(
+                str(adapter_path),
+                trust_remote_code=True,
+                token=hf_token,
+            )
+            # Verify the processor has a chat template — critical for correct prompting
+            has_template = getattr(processor.tokenizer, 'chat_template', None) is not None
+            if not has_template:
+                logger.warning("Adapter processor missing chat_template, loading from base model")
+                processor = AutoProcessor.from_pretrained(
+                    base_model_name,
+                    trust_remote_code=True,
+                    token=hf_token,
+                )
+        except Exception as e:
+            logger.warning(f"Failed to load processor from adapter ({e}), using base model")
+            processor = AutoProcessor.from_pretrained(
+                base_model_name,
+                trust_remote_code=True,
+                token=hf_token,
+            )
         processor.save_pretrained(str(merged_path))
 
         # Free memory
