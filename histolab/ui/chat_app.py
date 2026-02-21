@@ -838,6 +838,7 @@ REASONING: [brief explanation]"""
                 chatbot = gr.Chatbot(
                     label="Conversation",
                     height=500,
+                    type="messages",
                     elem_classes=["gradio-chatbot"]
                 )
                 
