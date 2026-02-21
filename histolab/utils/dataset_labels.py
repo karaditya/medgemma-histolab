@@ -34,17 +34,17 @@ DATASET_CONFIG = {
     "bach": {
         "path": DATA_DIR / "bach",
         "classes": ["Benign", "InSitu", "Invasive", "Normal"],
-        "extension": ".tif"
+        "extensions": [".tif", ".png", ".jpg"],
     },
     "crc": {
         "path": DATA_DIR / "crc",
         "classes": ["ADI", "BACK", "DEB", "LYM", "MUC", "MUS", "NORM", "STR", "TUM"],
-        "extension": ".tif"
+        "extensions": [".tif", ".png", ".jpg"],
     },
     "pcam": {
         "path": DATA_DIR / "pcam",
         "classes": ["Normal", "Tumor"],
-        "extension": ".png"
+        "extensions": [".png", ".jpg", ".tif"],
     }
 }
 
@@ -118,27 +118,35 @@ def get_true_label(file_path: str) -> Tuple[Optional[str], Optional[str]]:
     return None, None
 
 
+def _glob_extensions(directory: Path, extensions: list) -> list:
+    """Glob a directory for multiple file extensions."""
+    images = []
+    for ext in extensions:
+        images.extend(directory.glob(f"*{ext}"))
+    return images
+
+
 def get_all_dataset_images() -> Dict[str, Dict[str, list]]:
     """
     Get all available images from all datasets organized by dataset and class.
-    
+
     Returns:
         Dictionary mapping dataset_name -> class_name -> list of image paths
     """
     all_images = {}
-    
+
     for dataset_name, config in DATASET_CONFIG.items():
         dataset_path = config["path"]
         all_images[dataset_name] = {}
-        
+
         for class_name in config["classes"]:
             class_path = dataset_path / class_name
             if class_path.exists():
-                images = list(class_path.glob(f"*{config['extension']}"))
+                images = _glob_extensions(class_path, config["extensions"])
                 all_images[dataset_name][class_name] = [str(img) for img in images]
             else:
                 all_images[dataset_name][class_name] = []
-    
+
     return all_images
 
 
@@ -184,7 +192,7 @@ def get_random_image_from_dataset(dataset: str, class_name: Optional[str] = None
     if class_name and class_name in config["classes"]:
         class_path = dataset_path / class_name
         if class_path.exists():
-            images = list(class_path.glob(f"*{config['extension']}"))
+            images = _glob_extensions(class_path, config["extensions"])
             if images:
                 return str(random.choice(images))
     else:
@@ -193,11 +201,11 @@ def get_random_image_from_dataset(dataset: str, class_name: Optional[str] = None
         available_classes = []
         for cls in config["classes"]:
             class_path = dataset_path / cls
-            if class_path.exists() and any(class_path.glob(f"*{config['extension']}")):
+            if class_path.exists() and _glob_extensions(class_path, config["extensions"]):
                 available_classes.append(cls)
         if available_classes:
             chosen_class = random.choice(available_classes)
-            images = list((dataset_path / chosen_class).glob(f"*{config['extension']}"))
+            images = _glob_extensions(dataset_path / chosen_class, config["extensions"])
             return str(random.choice(images))
     
     return None

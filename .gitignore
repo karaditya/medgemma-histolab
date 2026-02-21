@@ -27,8 +27,8 @@ build/
 *.egg
 
 # ── Jupyter ──────────────────────────────────────────────────────────
-.ipynb_checkpoints/
-*.ipynb
+# .ipynb_checkpoints/
+# *.ipynb
 
 # ── IDE / OS ─────────────────────────────────────────────────────────
 .vscode/
@@ -49,3 +49,12 @@ histo_*.png
 *.pdf
 
 SUBMISSION_GUIDE.md
+histo_env/
+
+*.zip
+data/   
+*.env
+
+.kaggle_staging/
+
+prepare_kaggle_demo.py
